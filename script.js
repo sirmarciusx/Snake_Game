@@ -8,7 +8,8 @@ let recordsModal;
 let scoreElement;
 
 // Recordes
-let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+const defaultHighScores = [100, 50, 20];
+let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || defaultHighScores;
 
 // Efeitos sonoros
 let audioContext;
@@ -185,12 +186,10 @@ function stopBgMusic() {
 }
 
 function saveHighScore() {
-    if (score > 0) {
-        highScores.push(score);
-        highScores.sort((a, b) => b - a);
-        highScores = highScores.slice(0, 3);
-        localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
-    }
+    highScores.push(score);
+    highScores.sort((a, b) => b - a);
+    highScores = highScores.slice(0, 3);
+    localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
 }
 
 function showRecords() {
