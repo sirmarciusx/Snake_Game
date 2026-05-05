@@ -2,6 +2,8 @@
 
 Um jogo clássico da cobrinha (Snake Game) desenvolvido com HTML, CSS e JavaScript puro.
 
+Jogue agora: https://sirmarciusx.github.io/Snake_Game/
+
 ## Como Jogar
 
 1. Abra o arquivo `index.html` em seu navegador
