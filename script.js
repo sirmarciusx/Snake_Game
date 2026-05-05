@@ -5,11 +5,16 @@ let startButton;
 let recordsButton;
 let closeRecordsButton;
 let recordsModal;
+let nameModal;
+let playerNameInput;
+let saveNameButton;
 let scoreElement;
+let finalScoreSpan;
 
 // Recordes
 const defaultHighScores = [100, 50, 20];
 let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || defaultHighScores;
+let highScoresNames = JSON.parse(localStorage.getItem('snakeHighScoresNames')) || ['', '', ''];
 
 // Efeitos sonoros
 let audioContext;
@@ -59,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
     recordsButton = document.getElementById('records-btn');
     closeRecordsButton = document.getElementById('close-records-btn');
     recordsModal = document.getElementById('records-modal');
+    nameModal = document.getElementById('name-modal');
+    playerNameInput = document.getElementById('player-name');
+    saveNameButton = document.getElementById('save-name-btn');
+    finalScoreSpan = document.getElementById('final-score');
     scoreElement = document.getElementById('score');
     
     // Calcula o número de células no grid
@@ -77,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
     startButton.addEventListener('click', startGame);
     recordsButton.addEventListener('click', showRecords);
     closeRecordsButton.addEventListener('click', closeRecords);
+    saveNameButton.addEventListener('click', savePlayerName);
+    playerNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') savePlayerName();
+    });
     document.addEventListener('keydown', changeDirection);
 });
 
@@ -186,10 +199,37 @@ function stopBgMusic() {
 }
 
 function saveHighScore() {
-    highScores.push(score);
-    highScores.sort((a, b) => b - a);
-    highScores = highScores.slice(0, 3);
-    localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
+    const isNewRecord = score > highScores[highScores.length - 1] || highScores.length < 3;
+    
+    if (isNewRecord && score > 0) {
+        highScores.push(score);
+        highScores.sort((a, b) => b - a);
+        highScores = highScores.slice(0, 3);
+        
+        while (highScoresNames.length < highScores.length) {
+            highScoresNames.push('');
+        }
+        
+        localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
+        localStorage.setItem('snakeHighScoresNames', JSON.stringify(highScoresNames));
+        
+        finalScoreSpan.textContent = score;
+        nameModal.classList.add('show');
+        playerNameInput.focus();
+    }
+}
+
+function savePlayerName() {
+    const name = playerNameInput.value.trim() || 'Anônimo';
+    const rankIndex = highScores.indexOf(score);
+    
+    if (rankIndex !== -1) {
+        highScoresNames[rankIndex] = name;
+        localStorage.setItem('snakeHighScoresNames', JSON.stringify(highScoresNames));
+    }
+    
+    nameModal.classList.remove('show');
+    playerNameInput.value = '';
 }
 
 function showRecords() {
@@ -201,7 +241,8 @@ function showRecords() {
         recordsList.innerHTML = '<li>Nenhum record ainda!</li>';
     } else {
         highScores.forEach((s, i) => {
-            recordsList.innerHTML += `<li>${medals[i]} ${i + 1}º - ${s} pontos</li>`;
+            const name = highScoresNames[i] || '---';
+            recordsList.innerHTML += `<li>${medals[i]} ${name} - ${s} pontos</li>`;
         });
     }
     
