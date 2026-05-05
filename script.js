@@ -12,9 +12,9 @@ let scoreElement;
 let finalScoreSpan;
 
 // Recordes
-const defaultHighScores = [100, 50, 20];
+const defaultHighScores = [100, 80, 60, 50, 40, 30, 25, 20, 15, 10];
 let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || defaultHighScores;
-let highScoresNames = JSON.parse(localStorage.getItem('snakeHighScoresNames')) || ['', '', ''];
+let highScoresNames = JSON.parse(localStorage.getItem('snakeHighScoresNames')) || ['', '', '', '', '', '', '', '', '', '', ''];
 
 // Efeitos sonoros
 let audioContext;
@@ -199,23 +199,25 @@ function stopBgMusic() {
 }
 
 function saveHighScore() {
-    const isNewRecord = score > highScores[highScores.length - 1] || highScores.length < 3;
+    const isNewRecord = score > highScores[highScores.length - 1] && score > 0;
     
-    if (isNewRecord && score > 0) {
+    if (isNewRecord) {
         highScores.push(score);
         highScores.sort((a, b) => b - a);
-        highScores = highScores.slice(0, 3);
+        highScores = highScores.slice(0, 10);
         
-        while (highScoresNames.length < highScores.length) {
+        while (highScoresNames.length < 10) {
             highScoresNames.push('');
         }
         
         localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
         localStorage.setItem('snakeHighScoresNames', JSON.stringify(highScoresNames));
         
-        finalScoreSpan.textContent = score;
-        nameModal.classList.add('show');
-        playerNameInput.focus();
+        setTimeout(() => {
+            finalScoreSpan.textContent = score;
+            nameModal.classList.add('show');
+            playerNameInput.focus();
+        }, 5000);
     }
 }
 
@@ -230,19 +232,20 @@ function savePlayerName() {
     
     nameModal.classList.remove('show');
     playerNameInput.value = '';
+    resetGame();
 }
 
 function showRecords() {
     const recordsList = document.getElementById('records-list');
     recordsList.innerHTML = '';
-    const medals = ['🥇', '🥈', '🥉'];
+    const medals = ['🥇', '🥈', '🥉', '4º', '5º', '6º', '7º', '8º', '9º', '10º'];
     
     if (highScores.length === 0) {
         recordsList.innerHTML = '<li>Nenhum record ainda!</li>';
     } else {
         highScores.forEach((s, i) => {
             const name = highScoresNames[i] || '---';
-            recordsList.innerHTML += `<li>${medals[i]} ${name} - ${s} pontos</li>`;
+            recordsList.innerHTML += `<li>${medals[i]} ${name} - ${s} pts</li>`;
         });
     }
     
